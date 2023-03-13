@@ -1,0 +1,87 @@
+cabal-version: 3.0
+name:          plutarch-code
+version:       0.0.1
+
+common c
+  default-language:   GHC2021
+  default-extensions:
+    NoFlexibleInstances
+    NoMonomorphismRestriction
+    NoStarIsType
+    BlockArguments
+    DataKinds
+    DefaultSignatures
+    DeriveAnyClass
+    DerivingStrategies
+    DerivingVia
+    DisambiguateRecordFields
+    DuplicateRecordFields
+    FunctionalDependencies
+    GADTs
+    ImpredicativeTypes
+    LambdaCase
+    LexicalNegation
+    LiberalTypeSynonyms
+    MonadComprehensions
+    MultiWayIf
+    NegativeLiterals
+    NondecreasingIndentation
+    NumDecimals
+    OverloadedLabels
+    OverloadedRecordDot
+    OverloadedStrings
+    PackageImports
+    PartialTypeSignatures
+    PatternSynonyms
+    QualifiedDo
+    QuantifiedConstraints
+    QuasiQuotes
+    RankNTypes
+    RecordWildCards
+    RecursiveDo
+    RoleAnnotations
+    TypeFamilies
+    TypeFamilyDependencies
+    UnicodeSyntax
+    UnliftedFFITypes
+    UnliftedNewtypes
+    ViewPatterns
+
+  ghc-options:
+    -Weverything -Wno-unused-do-bind -Wno-missing-kind-signatures
+    -Wno-partial-type-signatures -Wno-implicit-prelude
+    -Wno-name-shadowing -Wno-unsafe -Wno-missing-safe-haskell-mode
+    -Wno-missing-local-signatures -Wno-prepositive-qualified-module
+    -Wno-missing-import-lists -Wno-monomorphism-restriction
+    -Wno-all-missed-specializations -Wno-unrecognised-warning-flags
+    -Wno-unrecognised-pragmas -Wno-unticked-promoted-constructors
+    -fprint-equality-relations -fprint-explicit-kinds
+    -fprint-explicit-foralls
+    -- -Werror
+
+library
+  import:          c
+  hs-source-dirs:  src
+  exposed-modules:
+  build-depends:
+      aeson                 >=2.0
+    , base
+    , bytestring
+    , containers
+    , data-default
+    , directory
+    , filepath
+    , plutarch
+    , plutarch-extra
+    , text
+
+    -- added
+    , base16-bytestring
+    , cborg
+    , generics-sop
+    , mtl
+    , plutus-core
+    , plutus-ledger-api
+    , plutus-tx
+    , serialise
+ 
