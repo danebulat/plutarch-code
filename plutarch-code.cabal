@@ -72,7 +72,8 @@ library
   import:          c
   hs-source-dirs:  src
   exposed-modules:
-    Validators.Vesting
+      Validators.Vesting
+    , Validators.Guess
   build-depends:
       aeson                 >=2.0
     , base
