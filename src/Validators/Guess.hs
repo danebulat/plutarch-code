@@ -17,6 +17,7 @@ import Data.Text                   (Text, unpack)
 
 import Plutarch
 import Plutarch.Evaluate
+import Plutarch.Extra.TermCont
 import Plutarch.Builtin            (pforgetData)
 import Plutarch.Script             qualified as PS
 import PlutusLedgerApi.V2          qualified as PL
@@ -51,7 +52,38 @@ instance DerivePlutusType PDat where
 -- ----------------------------------------------------------------------
 -- Validator script
 -- ----------------------------------------------------------------------
- 
+
+{- 
+ - TermCont monad version 
+ -}
+matchGuess'
+    :: Term s (
+       PData
+  :--> PData
+  :--> PAsData PScriptContext
+  :--> POpaque)
+matchGuess' = plam $ \dat red ctx' -> popaque $ unTermCont do
+    -- confirm script is for spending
+    ctx         <- pletFieldsC @'["purpose"] ctx'
+    PSpending _ <- pmatchC ctx.purpose
+
+    -- coerce datum and redeemer
+    (dat, _) <- ptryFromC @PDat @PData dat
+    (red, _) <- ptryFromC @PRedeem @PData red
+
+    -- get datum and redeemer fields
+    d <- pletFieldsC @'["_0"] dat
+    r <- pletFieldsC @'["_0"] red
+
+    -- check if datum matches redeemer
+    pguardC "correct guess" $ 
+      pfromData d._0 #== pfromData r._0 
+
+    pure $ pforgetData $ pdata $ pcon PUnit
+
+{- 
+ - Qualified do version 
+ -}
 matchGuess
     :: Term s (
        PData
@@ -59,22 +91,22 @@ matchGuess
   :--> PAsData PScriptContext
   :--> POpaque)
 matchGuess = plam $ \dat red ctx' -> P.do
-  -- confirm script is for spending
-  ctx         <- pletFields @'["purpose"] ctx'
-  PSpending _ <- pmatch ctx.purpose
+    -- confirm script is for spending
+    ctx         <- pletFields @'["purpose"] ctx'
+    PSpending _ <- pmatch ctx.purpose
 
-  -- coerce datum and redeemer
-  (dat, _) <- ptryFrom @PDat @PData dat
-  (red, _) <- ptryFrom @PRedeem @PData red
+    -- coerce datum and redeemer
+    (dat, _) <- ptryFrom @PDat @PData dat
+    (red, _) <- ptryFrom @PRedeem @PData red
 
-  -- get datum and redeemer fields
-  d <- pletFields @'["_0"] dat
-  r <- pletFields @'["_0"] red
+    -- get datum and redeemer fields
+    d <- pletFields @'["_0"] dat
+    r <- pletFields @'["_0"] red
 
-  -- check if datum matches redeemer
-  pif (pfromData d._0 #== pfromData r._0)
-    (popaque $ pconstant ())
-    (ptraceError $ pconstant "wrong guess")
+    -- check if datum matches redeemer
+    pif (pfromData d._0 #== pfromData r._0)
+      (popaque $ pconstant ())
+      (ptraceError $ pconstant "wrong guess")
 
 -- ----------------------------------------------------------------------
 -- Mock
