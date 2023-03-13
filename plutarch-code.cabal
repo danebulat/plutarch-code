@@ -2,6 +2,15 @@ cabal-version: 3.0
 name:          plutarch-code
 version:       0.0.1
 
+-- license:
+author:             Dane Bulat
+maintainer:         dane.bulat@gmail.com
+
+-- A copyright notice.
+-- copyright:
+-- category:
+-- extra-source-files: 
+
 common c
   default-language:   GHC2021
   default-extensions:
@@ -63,6 +72,7 @@ library
   import:          c
   hs-source-dirs:  src
   exposed-modules:
+    Validators.Vesting
   build-depends:
       aeson                 >=2.0
     , base
