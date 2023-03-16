@@ -5,27 +5,31 @@
 
 module Validators.Vesting where
 
-import           Plutarch.Prelude
-import           Plutarch.Api.V2
-import qualified Plutarch.Monadic            as P
-import           Plutarch.DataRepr           (PDataFields)
-import qualified PlutusTx
-import           PlutusTx.AssocMap           (empty)
-import           PlutusLedgerApi.V1.Interval
-import           Plutarch.Builtin            (pforgetData)
+import Plutarch.Prelude
+import Plutarch.Api.V2
+import Plutarch.Monadic            qualified as P
+import Plutarch.DataRepr           (PDataFields)
+import PlutusTx                    qualified
+import PlutusTx.AssocMap           qualified as AssocMap
+import PlutusLedgerApi.V1.Interval
+import Plutarch.Builtin            (pforgetData)
+import Plutarch.Script             qualified as PS
 
 -- Extra 
-import           Plutarch.Extra.Interval
-import           Plutarch.Extra.TermCont 
+import Plutarch.Extra.Interval
+import Plutarch.Extra.TermCont 
 
 -- Evaluating
-import qualified Data.ByteString.Short       as SBS
-import           Data.Default                (def)
-import           Data.Text                   (Text, unpack)
-import qualified PlutusLedgerApi.V2          as PL
-import           Plutarch                    (compile)
-import           Plutarch.Evaluate
-import           Plutarch.Script
+import Data.ByteString.Short       qualified as SBS
+import Data.Default                (def)
+import Data.Text                   (Text)
+import Data.Text                   qualified as Text
+import PlutusLedgerApi.V2          qualified as PL
+import Plutarch                    (compile)
+import Plutarch.Evaluate
+import Plutarch.Script
+
+import Utilities.Serialise
 
 -- ----------------------------------------------------------------------
 -- ptxSignedBy
@@ -149,18 +153,18 @@ mockCtx :: PL.ScriptContext
 mockCtx =
   PL.ScriptContext
     (PL.TxInfo
-      mempty     -- inputs
-      mempty     -- referenceInputs
-      mempty     -- outputs
-      mempty     -- fee
-      mempty     -- mint 
-      mempty     -- dcert 
-      empty      -- wdrl 
+      mempty              -- inputs
+      mempty              -- referenceInputs
+      mempty              -- outputs
+      mempty              -- fee
+      mempty              -- mint 
+      mempty              -- dcert 
+      AssocMap.empty      -- wdrl 
       (interval (PL.POSIXTime 20) (PL.POSIXTime 30))  -- validRange
       [PL.PubKeyHash "f013", PL.PubKeyHash "f014"]    -- signatories
-      empty      -- redeemers
-      empty      -- datums
-      ""         -- id
+      AssocMap.empty      -- redeemers
+      AssocMap.empty      -- datums
+      ""                  -- id
     )
     (PL.Spending (PL.TxOutRef "" 1))
 
@@ -181,18 +185,18 @@ appliedValidator = checkVesting # dat # pred # pctx
 runValidator :: (Either EvalError Script, PL.ExBudget, [Text])
 runValidator = case compile def appliedValidator of
     Right script -> evalScript script
-    Left  err    -> error (unpack err)
+    Left  err    -> error (Text.unpack err)
 
 -- compile script + output script and budget
 eval :: (Either EvalError Script, PL.ExBudget, [Text])
 eval = case compile def checkVesting' of
     Right script -> evalScript script
-    Left  err    -> error (unpack err)
+    Left  err    -> error (Text.unpack err)
 
 -- compile and output script
 eval' :: Script
 eval' = case compile def checkVesting' of
-  Left err     -> error (unpack err)
+  Left err     -> error (Text.unpack err)
   Right script -> let (s, _, _) = evalScript script
                   in case s of
                        Right s -> s
@@ -202,7 +206,7 @@ eval' = case compile def checkVesting' of
 eval'' :: Either EvalError Script
 eval'' = case compile def checkVesting' of
   Right script -> let (s, _, _) = evalScript script in s
-  Left err     -> error (unpack err)
+  Left err     -> error (Text.unpack err)
 
 -- ----------------------------------------------------------------------
 -- Serialise
@@ -210,3 +214,6 @@ eval'' = case compile def checkVesting' of
 
 serialise' :: SBS.ShortByteString
 serialise' = serialiseScript eval'
+
+serialiseToHex :: String
+serialiseToHex = validatorToHexString $ PS.serialiseScript eval'

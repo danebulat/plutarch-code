@@ -11,7 +11,7 @@ import Plutarch.Api.V2.Contexts
 import Plutarch.Monadic            qualified as P
 import Plutarch.DataRepr           (PDataFields)
 
-import Data.ByteString.Short       qualified as SBS       
+import Data.ByteString.Short       qualified as BSS
 import Data.Default                (def)
 import Data.Text                   (Text, unpack)
 
@@ -22,6 +22,7 @@ import Plutarch.Builtin            (pforgetData)
 import Plutarch.Script             qualified as PS
 import PlutusLedgerApi.V2          qualified as PL
 import PlutusLedgerApi.V1.Interval
+import Utilities.Serialise
 
 -- ----------------------------------------------------------------------
 -- Redeemer Term
@@ -179,5 +180,9 @@ eval'' = case compile def matchGuess of
 -- Serialise
 -- ----------------------------------------------------------------------
 
-serialise' :: SBS.ShortByteString
+serialise' :: BSS.ShortByteString
 serialise' = PS.serialiseScript eval'
+
+serialiseToHex :: String
+serialiseToHex = validatorToHexString $ PS.serialiseScript eval'
+
