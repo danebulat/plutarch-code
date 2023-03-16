@@ -72,10 +72,12 @@ library
   import:          c
   hs-source-dirs:  src
   exposed-modules:
-      Validators.Vesting
+      Utilities.Serialise
+    , Validators.Vesting
     , Validators.Guess
   build-depends:
       aeson                 >=2.0
+    , aeson-pretty
     , base
     , bytestring
     , containers
@@ -89,10 +91,12 @@ library
     -- added
     , base16-bytestring
     , cborg
+    , cardano-binary
     , generics-sop
     , mtl
     , plutus-core
     , plutus-ledger-api
     , plutus-tx
+    -- , plutus-tx-plugin
     , serialise
  
