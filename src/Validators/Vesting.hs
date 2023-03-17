@@ -29,8 +29,6 @@ import Plutarch                    (compile)
 import Plutarch.Evaluate
 import Plutarch.Script
 
-import Utilities.Serialise
-
 -- ----------------------------------------------------------------------
 -- ptxSignedBy
 -- ----------------------------------------------------------------------
@@ -214,6 +212,3 @@ eval'' = case compile def checkVesting' of
 
 serialise' :: SBS.ShortByteString
 serialise' = serialiseScript eval'
-
-serialiseToHex :: String
-serialiseToHex = validatorToHexString $ PS.serialiseScript eval'

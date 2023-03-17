@@ -1,13 +1,61 @@
 module Utilities.Serialise
   ( validatorToHexString
   , closedTermToHexString
+  , writeMatchV
+  , vestingV
   ) where
 
 import Data.ByteString.Short qualified as SBS
-import Data.Word                          (Word8)
+import Data.Default          (def)
+import Data.Word             (Word8)
 import Numeric
 import Plutarch
-import Plutarch.Script                    (serialiseScript)
+import Plutarch.Prelude
+import Plutarch.Api.V2
+import Plutarch.Script       (serialiseScript)
+import Ply.Plutarch          (writeTypedScript)
+
+import Validators.Guess      (matchGuess)
+import Validators.Vesting    (checkVesting)
+
+-- ---------------------------------------------------------------------- 
+-- Ply
+-- ---------------------------------------------------------------------- 
+
+-- Match guess validator
+matchGuessV :: ClosedTerm PValidator
+matchGuessV = plam $ \dat red ctx -> matchGuess # dat # red # pdata ctx
+
+writeMatchV :: IO () 
+writeMatchV = 
+    writeTypedScript 
+      (Config NoTracing) 
+      "Match guess validator" 
+      "data/match-guess.plutus" 
+      matchGuessV
+
+-- Vesting validator
+vestingV :: ClosedTerm PValidator
+vestingV = plam $ \dat red ctx -> checkVesting # dat # red # pdata ctx 
+
+writeVestingV :: IO () 
+writeVestingV = 
+    writeTypedScript 
+      (Config NoTracing) 
+      "Vesting validator" 
+      "data/vesting.plutus" 
+      vestingV 
+
+-- ---------------------------------------------------------------------- 
+-- Manual serialisation from bytestring to hex 
+-- ---------------------------------------------------------------------- 
+
+-- Not verified on testnet, use ply library to serialise 
+-- scripts to CBOR hex and raw hex.
+--
+-- Example usage:
+-- serialiseToHex :: String
+-- serialiseToHex = validatorToHexString $ serialiseScript eval'
 
 validatorToHexString :: SBS.ShortByteString -> String
 validatorToHexString = concatMap byteToHex . SBS.unpack

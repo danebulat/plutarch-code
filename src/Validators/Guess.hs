@@ -22,7 +22,6 @@ import Plutarch.Builtin            (pforgetData)
 import Plutarch.Script             qualified as PS
 import PlutusLedgerApi.V2          qualified as PL
 import PlutusLedgerApi.V1.Interval
-import Utilities.Serialise
 
 -- ----------------------------------------------------------------------
 -- Redeemer Term
@@ -57,13 +56,13 @@ instance DerivePlutusType PDat where
 {- 
  - TermCont monad version 
  -}
-matchGuess'
+matchGuess
     :: Term s (
        PData
   :--> PData
   :--> PAsData PScriptContext
   :--> POpaque)
-matchGuess' = plam $ \dat red ctx' -> popaque $ unTermCont do
+matchGuess = plam $ \dat red ctx' -> popaque $ unTermCont do
     -- confirm script is for spending
     ctx         <- pletFieldsC @'["purpose"] ctx'
     PSpending _ <- pmatchC ctx.purpose
@@ -85,13 +84,13 @@ matchGuess' = plam $ \dat red ctx' -> popaque $ unTermCont do
 {- 
  - Qualified do version 
  -}
-matchGuess
+matchGuess'
     :: Term s (
        PData
   :--> PData
   :--> PAsData PScriptContext
   :--> POpaque)
-matchGuess = plam $ \dat red ctx' -> P.do
+matchGuess' = plam $ \dat red ctx' -> P.do
     -- confirm script is for spending
     ctx         <- pletFields @'["purpose"] ctx'
     PSpending _ <- pmatch ctx.purpose
@@ -182,7 +181,3 @@ eval'' = case compile def matchGuess of
 
 serialise' :: BSS.ShortByteString
 serialise' = PS.serialiseScript eval'
-
-serialiseToHex :: String
-serialiseToHex = validatorToHexString $ PS.serialiseScript eval'
-
