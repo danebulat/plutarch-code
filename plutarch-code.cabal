@@ -75,6 +75,7 @@ library
       Utilities.Serialise
     , Validators.Vesting
     , Validators.Guess
+    , Validators.CheckSignature
   build-depends:
       aeson                 >=2.0
     , aeson-pretty
