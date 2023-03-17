@@ -11,19 +11,23 @@ repository cardano-haskell-packages
     c00aae8461a256275598500ea0e187588c35a5d5d7454fb57eac18d9edb86a56
     d4a35cd3121aa00d18544bb0ac01c3e1691d618f462c46129271bccf39f7e8ee
 
+index-state:
+  , hackage.haskell.org 2022-11-14T00:20:02Z
+  , cardano-haskell-packages 2022-11-17T04:56:26Z    
+
+benchmarks: true
+tests: true
+write-ghc-environment-files: never
+test-show-details: direct
+
 constraints:
   dependent-sum >= 0.7.1.0
 
 package nothunks
   flags: +vector
 
-index-state:
-  , hackage.haskell.org 2022-11-14T00:20:02Z
-  , cardano-haskell-packages 2022-11-17T04:56:26Z    
-
 packages: ./.
   
--- Plutus apps revision from v1.0.0
 source-repository-package
   type: git
   location: https://github.com/Plutonomicon/plutarch-plutus.git
@@ -31,6 +35,12 @@ source-repository-package
     . 
     plutarch-extra
     plutarch-test
-  tag: v1.3.0
+  tag: 95e40b42a1190191d0a07e3e4e938b72e6f75268
 
-benchmarks: true
+source-repository-package
+  type: git
+  location: https://github.com/mlabs-haskell/ply.git
+  subdir:
+    ply-core
+    ply-plutarch
+  tag: 0.4.0

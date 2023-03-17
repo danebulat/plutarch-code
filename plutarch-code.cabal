@@ -84,9 +84,12 @@ library
     , data-default
     , directory
     , filepath
+    , text
+    
+    -- plutarch 
     , plutarch
     , plutarch-extra
-    , text
+    , ply-plutarch
 
     -- added
     , base16-bytestring
@@ -97,6 +100,6 @@ library
     , plutus-core
     , plutus-ledger-api
     , plutus-tx
-    -- , plutus-tx-plugin
+-- , plutus-tx-plugin
     , serialise
  
