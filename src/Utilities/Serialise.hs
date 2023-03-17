@@ -5,18 +5,19 @@ module Utilities.Serialise
   , vestingV
   ) where
 
-import Data.ByteString.Short qualified as SBS
-import Data.Default          (def)
-import Data.Word             (Word8)
+import Data.ByteString.Short     qualified as SBS
+import Data.Default              (def)
+import Data.Word                 (Word8)
 import Numeric
 import Plutarch
 import Plutarch.Prelude
 import Plutarch.Api.V2
-import Plutarch.Script       (serialiseScript)
-import Ply.Plutarch          (writeTypedScript)
+import Plutarch.Script           (serialiseScript)
+import Ply.Plutarch              (writeTypedScript)
 
-import Validators.Guess      (matchGuess)
-import Validators.Vesting    (checkVesting)
+import Validators.Guess          (matchGuess)
+import Validators.Vesting        (checkVesting)
+import Validators.CheckSignature (checkSignatory)
 
 -- ---------------------------------------------------------------------- 
 -- Ply
@@ -45,6 +46,19 @@ writeVestingV =
       "Vesting validator" 
       "data/vesting.plutus" 
       vestingV 
+
+-- Check signature validator
+parameterizedCheckSigV :: ClosedTerm (PPubKeyHash :--> PValidator)
+parameterizedCheckSigV = plam $ \pkh dat red ctx -> 
+    checkSignatory # pkh # dat # red # pdata ctx 
+
+writeCheckSigV :: IO () 
+writeCheckSigV = 
+    writeTypedScript 
+      (Config NoTracing) 
+      "Check signatory validator" 
+      "data/check-signatory.plutus" 
+      parameterizedCheckSigV 
 
 -- ---------------------------------------------------------------------- 
 -- Manual serialisation from bytestring to hex 
