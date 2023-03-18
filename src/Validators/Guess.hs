@@ -76,7 +76,7 @@ matchGuess = plam $ \dat red ctx' -> popaque $ unTermCont do
     r <- pletFieldsC @'["_0"] red
 
     -- check if datum matches redeemer
-    pguardC "correct guess" $ 
+    pguardC "incorrect guess" $ 
       pfromData d._0 #== pfromData r._0 
 
     pure $ pforgetData $ pdata $ pcon PUnit

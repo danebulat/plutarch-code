@@ -91,10 +91,10 @@ checkVesting = plam $ \dat' _ ctx' -> popaque $ unTermCont do
     validRange  <- pletC $ validRangeF.validRange
 
     -- checks
-    pguardC "deadline passed" 
+    pguardC "deadline not passed" 
       (pcontains # (pfrom # deadline) # pfromData validRange)
 
-    pguardC "signed by beneficiary" 
+    pguardC "not signed by beneficiary" 
       (ptxSignedBy # signatories # beneficiary) 
 
     -- return unit

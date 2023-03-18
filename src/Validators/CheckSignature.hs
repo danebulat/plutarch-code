@@ -46,7 +46,7 @@ checkSignatory = plam $ \ph _ _ ctx' -> popaque $ unTermCont $ do
   let 
     signatories = pfield @"signatories" # ctx.txInfo
 
-  pguardC "signed by beneficiary" 
+  pguardC "not signed by beneficiary" 
     (pelem # pdata ph # pfromData signatories)
 
   pure $ pforgetData $ pdata $ pcon PUnit
