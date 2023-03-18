@@ -2,11 +2,12 @@ module Utilities.Serialise
   ( validatorToHexString
   , closedTermToHexString
   , writeMatchV
-  , vestingV
+  , writeVestingV
+  , writeCheckSigV
+  , writeNftMp
   ) where
 
 import Data.ByteString.Short     qualified as SBS
-import Data.Default              (def)
 import Data.Word                 (Word8)
 import Numeric
 import Plutarch
@@ -14,10 +15,12 @@ import Plutarch.Prelude
 import Plutarch.Api.V2
 import Plutarch.Script           (serialiseScript)
 import Ply.Plutarch              (writeTypedScript)
+import System.FilePath           ((</>))
 
 import Validators.Guess          (matchGuess)
 import Validators.Vesting        (checkVesting)
 import Validators.CheckSignature (checkSignatory)
+import MintingPolicies.NFT       (nftMp)
 
 -- ---------------------------------------------------------------------- 
 -- Ply
@@ -32,7 +35,7 @@ writeMatchV =
     writeTypedScript 
       (Config NoTracing) 
       "Match guess validator" 
-      "data/match-guess.plutus" 
+      ("data" </> "match-guess.plutus")
       matchGuessV
 
 -- Vesting validator
@@ -44,7 +47,7 @@ writeVestingV =
     writeTypedScript 
       (Config NoTracing) 
       "Vesting validator" 
-      "data/vesting.plutus" 
+      ("data" </> "vesting.plutus")
       vestingV 
 
 -- Check signature validator
@@ -57,8 +60,17 @@ writeCheckSigV =
     writeTypedScript 
       (Config NoTracing) 
       "Check signatory validator" 
-      "data/check-signatory.plutus" 
+      ("data" </> "check-signatory.plutus")
       parameterizedCheckSigV 
+
+-- NFT minting policy
+writeNftMp :: IO () 
+writeNftMp =
+    writeTypedScript 
+      (Config {tracingMode=DoTracing})
+      "NFT Minting Policy (DoTracing)"
+      ("data" </> "nftMp.plutus")
+      nftMp
 
 -- ---------------------------------------------------------------------- 
 -- Manual serialisation from bytestring to hex 
