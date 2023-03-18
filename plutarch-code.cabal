@@ -77,6 +77,7 @@ library
     , Validators.Guess
     , Validators.CheckSignature
     , MintingPolicies.NFT
+    , MintingPolicies.NFTOffChain
   build-depends:
       aeson                 >=2.0
     , aeson-pretty
@@ -91,6 +92,7 @@ library
     -- plutarch 
     , plutarch
     , plutarch-extra
+    , ply-core
     , ply-plutarch
 
     -- added
