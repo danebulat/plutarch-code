@@ -76,6 +76,7 @@ library
     , Validators.Vesting
     , Validators.Guess
     , Validators.CheckSignature
+    , MintingPolicies.NFT
   build-depends:
       aeson                 >=2.0
     , aeson-pretty
